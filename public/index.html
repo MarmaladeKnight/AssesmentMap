@@ -4,14 +4,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
-    <script src="map.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>React App</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../src/styles.css">
 </head>
 <body>
 
     <div id="map"></div>
-    <div id="root"></div>
 
+    <div id="root"></div>
+    <a href="#" class="menuButton">
+        <span></span>
+    </a>
+    <script type="text/javascript">
+        var clicked = false;
+
+        $(document).ready(function(){
+            $('.menuButton').on('click', function(e) {
+                e.preventDefault;
+                if (clicked){
+                    $(this).toggleClass('menuButton_active');
+                    $(".routeWrap").css("left", "-100%");
+                } else {
+                    $(this).toggleClass('menuButton_active');
+                    $(".routeWrap").css("left", "0px");
+                }
+                clicked = !clicked;
+            });
+        });
+
+    </script>
   </body>
 </html>
