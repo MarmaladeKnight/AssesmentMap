@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Shape from "../Shape.svg"
 
-const ymaps = window.ymaps;
-
 class App extends Component {
     componentDidMount(){
         this.map();
     }
 
     map = () => {
+        const ymaps = window.ymaps;
+
         ymaps.ready(init);
 
         let returnPointsArray = () => {
@@ -23,23 +23,19 @@ class App extends Component {
                 zoom: 15
             });
 
+
             let myroute;
+            let myGeoObjects = new ymaps.GeoObjectCollection({});
 
             function newRoute() {
                 //Удаляем предыдущий маршрут
                 myMap.geoObjects.remove(myroute);
 
-                //Получаем список элементов
-                let listItems = Array.prototype.slice.call(document.getElementById('listWrap').childNodes);
+                //Получаем элименты списка
+                let listItems = document.getElementById('listWrap').getElementsByTagName('img');
 
-                //console.log(myMap.geoObjects);
-                console.log(listItems.length);
-                if(listItems.length === 0){
-                    console.log("хей");
-                    //myMap.removeAllGeoObjects();
-                }
+                listItems = Array.prototype.slice.call(listItems);
 
-                //Подписываемся на клик по элементу списка
                 listItems.map((item) =>
                 {
                     return item.onclick = () =>
@@ -51,20 +47,16 @@ class App extends Component {
                 //Получаем список точек
                 let pointsArr = returnPointsArray();
 
-                if (pointsArr.length > 1){
-                    //Создвем новый маршрут, если точек больше 1
-                    ymaps.route(pointsArr, { mapStateAutoApply: true }).then((route) => {
-                            myMap.geoObjects.add(route);
-                            myroute = route;
-                        },
-                        (error) => {
-                            alert('Возникла ошибка: ' + error.message);
-                        });
+                //Создание метки или маршрута в зависимоти от количества заданных точек
+                if (pointsArr.length === 0){
+                    //Удаляем метку с карты
+                    myGeoObjects.removeAll();
                 } else if (pointsArr.length === 1){
+                    //Создание метки на карте
                     let geoPoint = ymaps.geocode(pointsArr[0])
 
                     geoPoint.then(
-                         (res) => {
+                        (res) => {
                             if(res.metaData.geocoder.found){
                                 let coords = res.geoObjects.get(0).geometry.getCoordinates()
 
@@ -72,7 +64,10 @@ class App extends Component {
                                     balloonContent: pointsArr[0]
                                 });
 
-                                myMap.geoObjects.add(myPlacemark);
+                                myGeoObjects.removeAll();
+                                myGeoObjects.add(myPlacemark);
+
+                                myMap.geoObjects.add(myGeoObjects);
                                 myMap.setCenter(coords);
                             } else {
                                 alert('Ошибка');
@@ -82,6 +77,28 @@ class App extends Component {
                             alert('Ошибка ' + err.message);
                         }
                     );
+                } else if (pointsArr.length > 1){
+                    //Создвем новый маршрут, если точек больше 1
+                    ymaps.route(pointsArr, { mapStateAutoApply: true }).then((route) => {
+                            myGeoObjects.removeAll();
+                            myGeoObjects.add(route);
+                            myMap.geoObjects.add(myGeoObjects);
+                            myroute = route;
+                            let editing = false;
+
+                            document.getElementById('editButton').onclick = () => {
+                                if (editing) {
+                                    route.editor.stop();
+                                } else {
+                                    route.editor.start({ editWayPoints: true });
+                                }
+                                editing = !editing
+                            };
+                        },
+                        (error) => {
+                            alert('Возникла ошибка: ' + error.message);
+                        });
+
                 }
             }
 
@@ -114,7 +131,7 @@ class App extends Component {
         }
     }
 
-        render() {
+    render() {
         const pointList = this.props.PointStore.map((point, index) =>
             <li className="routeItem" key={index} id={index} >
                 <p>

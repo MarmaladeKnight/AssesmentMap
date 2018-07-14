@@ -5,17 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <!-- Add manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <!-- Tell the browser it's a PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Tell iOS it's a PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Make sure theme-color is defined -->
+    <meta name="theme-color" content="#ff5e3a">
     <title>React App</title>
     <link rel="stylesheet" href="../src/styles.css">
 </head>
 <body>
 
     <div id="map"></div>
+    <p href="#" id="editButton">Редактировать точки маршрута</p>
 
     <div id="root"></div>
     <a href="#" class="menuButton">
         <span></span>
     </a>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                    // Registration was successful
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    // registration failed :(
+                    console.log('ServiceWorker registration failed: ', err);
+                }).catch(function(err) {
+                    console.log(err)
+                });
+            });
+        } else {
+            console.log('service worker is not supported');
+        }
+    </script>
+
     <script type="text/javascript">
         var clicked = false;
 
@@ -30,6 +60,14 @@
                     $(".routeWrap").css("left", "0px");
                 }
                 clicked = !clicked;
+            });
+
+            $('#editButton').on('click', function() {
+               if ($('#editButton').text() !== 'Отключить редактирование'){
+                    $('#editButton').text('Отключить редактирование');
+               } else {
+                    $('#editButton').text('Редактировать точки маршрута');
+               }
             });
         });
 

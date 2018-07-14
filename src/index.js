@@ -7,9 +7,9 @@ import routeApp from './components/reducers.js'
 import App from './components/App.js'
 import './styles.scss'
 
-const store = createStore(
-    routeApp,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+export const store = createStore(
+    routeApp
+    //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
 ReactDOM.render(
