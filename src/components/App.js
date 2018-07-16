@@ -59,9 +59,10 @@ class App extends Component {
                         (res) => {
                             if(res.metaData.geocoder.found){
                                 let coords = res.geoObjects.get(0).geometry.getCoordinates()
+                                let adress = res.geoObjects.get(0).getAddressLine();
 
                                 let myPlacemark = new ymaps.Placemark(coords, {
-                                    balloonContent: pointsArr[0]
+                                    balloonContent: adress
                                 });
 
                                 myGeoObjects.removeAll();
@@ -85,11 +86,23 @@ class App extends Component {
                             myMap.geoObjects.add(myGeoObjects);
                             myroute = route;
                             let editing = false;
-
+                            
                             document.getElementById('editButton').onclick = () => {
                                 if (editing) {
                                     route.editor.stop();
                                 } else {
+                                    /*
+                                    route.editor.events.add("waypointdragend", () => { 
+                                        let points = route.getWayPoints();
+                                        let length = points.getLength();
+                                        for(let i = 0; i < length; i++){
+                                            let thisPoint = points.get(i)
+                                            //let pointAdress = 
+                                            thisPoint.properties.set('balloonContent', "thisPoint.getAddressLine()");
+                                            console.log(thisPoint);
+                                        }
+                                    });
+                                    */
                                     route.editor.start({ editWayPoints: true });
                                 }
                                 editing = !editing
